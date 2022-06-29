@@ -1,40 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useParams } from "react-router-dom";
+import db from "../firebase";
 
 function Detail() {
+  const { id } = useParams();
+  const [movie, setMovie] = useState();
+
+  useEffect(() => {
+    db.collection("movies")
+      .doc(id)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          setMovie(doc.data());
+        } else {
+        }
+      });
+  }, [id]);
+
+  console.log("Movie is", movie);
+
   return (
     <Container>
-      <Background>
-        <img src="https://assets.reedpopcdn.com/ja-sabemos-quanto-tempo-dura-spider-man-homecoming-1496141412245.jpg/BROK/thumbnail/1600x900/format/jpg/quality/80/ja-sabemos-quanto-tempo-dura-spider-man-homecoming-1496141412245.jpg" />
-      </Background>
-      <ImageTitle>
-        <img src="/images/spiderman-logo.png" />
-      </ImageTitle>
-      <Controls>
-        <PlayButton>
-          <img src="/images/play-icon-black.png" />
-          <span>PLAY</span>
-        </PlayButton>
+      {movie && (
+        <>
+          <Background>
+            <img src={movie.backgroundImg} />
+          </Background>
+          <ImageTitle>
+            <img src={movie.titleImg} />
+          </ImageTitle>
+          <Controls>
+            <PlayButton>
+              <img src="/images/play-icon-black.png" />
+              <span>PLAY</span>
+            </PlayButton>
 
-        <TrailerButton>
-          <img src="/images/play-icon-white.png" />
-          <span>Trailer</span>
-        </TrailerButton>
+            <TrailerButton>
+              <img src="/images/play-icon-white.png" />
+              <span>Trailer</span>
+            </TrailerButton>
 
-        <AddButton>
-          <span>+</span>
-        </AddButton>
+            <AddButton>
+              <span>+</span>
+            </AddButton>
 
-        <GroupWatchButton>
-          <img src="/images/group-icon.png" />
-        </GroupWatchButton>
-      </Controls>
-      <SubTitle>2017 7m Action, Marvel, Super Hero</SubTitle>
-      <Description>
-        ปีเตอร์กลับไปใช้ชีวิตประจำวันแบบปกติธรรมดาอีกครั้ง
-        แต่เมื่อวัลเชอร์ถือกำเนิดขึ้นในฐานะวายร้ายคนใหม่
-        สิ่งที่สำคัญที่สุดในชีวิตปีเตอร์จึงตกอยู่ในอันตราย
-      </Description>
+            <GroupWatchButton>
+              <img src="/images/group-icon.png" />
+            </GroupWatchButton>
+          </Controls>
+          <SubTitle>{movie.subTitle}</SubTitle>
+          <Description>{movie.description}</Description>
+        </>
+      )}
     </Container>
   );
 }
@@ -127,7 +146,7 @@ const GroupWatchButton = styled(AddButton)`
 `;
 
 const SubTitle = styled.div`
-  color: rgb(0, 0, 0);
+  color: white;
   font-size: 20px;
   margin-top: 25px;
 `;
@@ -136,5 +155,6 @@ const Description = styled.div`
   line-height: 1.4;
   margin-top: 20px;
   font-size: 20px;
-  color: rgb(0, 0, 0);
+  color: white;
+  max-width: 760px;
 `;
